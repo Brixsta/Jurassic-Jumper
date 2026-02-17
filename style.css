@@ -1,0 +1,15 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body,
+html {
+  display: flex;
+  background-color: #111;
+  justify-content: center;
+}
+
+canvas {
+  background-color: #222;
+}
