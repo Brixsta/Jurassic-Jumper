@@ -1,4 +1,8 @@
 import Caveman from "./Caveman.js";
+import Platform from "./Platform.js";
+import World from "./World.js";
+
+const world = World;
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -16,14 +20,17 @@ const cavemanSprites = {
 
 ctx.imageSmoothingEnabled = true;
 
-// Constants
-const BASE_WIDTH = 360;
-const BASE_HEIGHT = 640;
-const CAVEMAN_WIDTH = BASE_WIDTH * 0.3;
-const CAVEMAN_HEIGHT = BASE_WIDTH * 0.3;
-
 // Create Player
-const player = new Caveman(0, 0, CAVEMAN_WIDTH, CAVEMAN_HEIGHT, cavemanSprites);
+const player = new Caveman(
+  0,
+  0,
+  world.cavemanBaseWidth,
+  world.cavemanBaseHeight,
+  cavemanSprites,
+);
+
+// Create Platform
+const plat1 = new Platform(300, 600, 300, 100, player);
 
 // Main Game Loop
 let last = 0;
@@ -38,19 +45,22 @@ const gameLoop = (time) => {
 // Update Objects
 const update = (deltaTime) => {
   player.update(deltaTime);
+  plat1.update(deltaTime);
 };
 
 // Responsive scaling
 const resize = () => {
-  const scaleX = window.innerWidth / BASE_WIDTH;
-  const scaleY = window.innerHeight / BASE_HEIGHT;
+  const scaleX = window.innerWidth / world.canvasBaseWidth;
+  const scaleY = window.innerHeight / world.canvasBaseHeight;
   const scale = Math.min(scaleX, scaleY);
 
-  canvas.width = BASE_WIDTH * scale;
-  canvas.height = BASE_HEIGHT * scale;
+  canvas.width = world.canvasBaseWidth * scale;
+  canvas.height = world.canvasBaseHeight * scale;
 
   // Scale Character, Gravity, JumpStrength, and Ground Level
-  player.applyScaling(scale);
+  player.scalePlayer(scale);
+
+  plat1.scaled = true;
 };
 
 window.onresize = resize;
@@ -60,6 +70,7 @@ resize(); // call initially
 const draw = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   player.draw(ctx);
+  plat1.draw(ctx);
 };
 
 //Start when sprite is ready

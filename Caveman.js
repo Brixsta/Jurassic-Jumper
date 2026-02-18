@@ -1,25 +1,22 @@
+import World from "./World.js";
+const world = World;
+
+console.log(world);
+
 export default class Caveman {
   constructor(x, y, width, height, cavemanSprites) {
     this.x = x;
     this.y = y;
-
     this.cavemanRunning = cavemanSprites.running;
     this.cavemanJumping = cavemanSprites.jumping;
-
-    // Base Values
-    this.baseWidth = width;
-    this.baseHeight = height;
-    this.baseGravity = 2000;
-    this.baseJumpStrength = 1200;
-    this.baseGroundLevel = 640;
-    this.width = this.baseWidth;
-    this.height = this.baseHeight;
+    this.width = width;
+    this.height = height;
 
     // Physics
-    this.gravity = this.baseGravity;
-    this.jumpStrength = this.baseJumpStrength;
+    this.gravity = world.baseGravity;
+    this.jumpStrength = world.cavemanBaseJumpStrength;
     this.vy = 0;
-    this.groundLevel = this.baseGroundLevel;
+    this.groundLevel = world.baseGroundLevel;
     this.currentAnimation = "running";
     this.handleInput();
 
@@ -55,19 +52,19 @@ export default class Caveman {
     });
   };
 
-  applyScaling = (scale) => {
+  scalePlayer = (scale) => {
     // Scale Character
-    this.height = this.baseHeight * scale;
-    this.width = this.baseWidth * scale;
+    this.height = world.cavemanBaseHeight * scale;
+    this.width = world.cavemanBaseWidth * scale;
 
     // Scale Gravity
-    this.gravity = this.baseGravity * scale;
+    this.gravity = world.baseGravity * scale;
 
     // Scale JumpStrength
-    this.jumpStrength = this.baseJumpStrength * scale;
+    this.jumpStrength = world.cavemanBaseJumpStrength * scale;
 
     // Update Ground Level
-    this.groundLevel = this.baseGroundLevel * scale - this.height;
+    this.groundLevel = world.baseGroundLevel * scale - this.height;
   };
 
   detectCurrentAnimation = () => {
