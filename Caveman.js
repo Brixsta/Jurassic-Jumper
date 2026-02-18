@@ -1,16 +1,23 @@
 import World from "./World.js";
 const world = World;
 
-console.log(world);
-
 export default class Caveman {
   constructor(x, y, width, height, cavemanSprites) {
-    this.x = x;
-    this.y = y;
+    // Base Values
+    this.baseX = x;
+    this.baseY = y;
+    this.baseWidth = width;
+    this.baseHeight = height;
+    this.spawned = false;
+
+    this.x = this.baseX;
+    this.y = this.baseY;
+    this.width = this.baseWidth;
+    this.height = this.baseHeight;
+    this.scale = 1;
+
     this.cavemanRunning = cavemanSprites.running;
     this.cavemanJumping = cavemanSprites.jumping;
-    this.width = width;
-    this.height = height;
 
     // Physics
     this.gravity = world.baseGravity;
@@ -52,19 +59,29 @@ export default class Caveman {
     });
   };
 
-  scalePlayer = (scale) => {
-    // Scale Character
-    this.height = world.cavemanBaseHeight * scale;
-    this.width = world.cavemanBaseWidth * scale;
+  scalePlayer = (newScale) => {
+    // Calculate ratio between new scale and previous scale
+    const ratio = newScale / this.scale;
+
+    // Scale Size
+    this.width = this.baseWidth * newScale;
+    this.height = this.baseHeight * newScale;
+
+    // Scale Position
+    this.x *= ratio;
+    this.y *= ratio;
 
     // Scale Gravity
-    this.gravity = world.baseGravity * scale;
+    this.gravity = world.baseGravity * newScale;
 
     // Scale JumpStrength
-    this.jumpStrength = world.cavemanBaseJumpStrength * scale;
+    this.jumpStrength = world.cavemanBaseJumpStrength * newScale;
 
     // Update Ground Level
-    this.groundLevel = world.baseGroundLevel * scale - this.height;
+    this.groundLevel = world.baseGroundLevel * newScale - this.height;
+
+    // Store the new scale for the next resize
+    this.scale = newScale;
   };
 
   detectCurrentAnimation = () => {
@@ -130,7 +147,7 @@ export default class Caveman {
     // Detect Current Animation
     this.detectCurrentAnimation();
 
-    // Apply Gravity
+    //Apply Gravity
     this.vy += this.gravity * deltaTime;
 
     // Move
@@ -138,6 +155,15 @@ export default class Caveman {
 
     // Land on Ground Level
     if (this.y >= this.groundLevel) this.y = this.groundLevel;
+
+    // Hit head on Ceiling
+    if (this.y <= 0) {
+      this.y = 0;
+
+      if (this.vy < 0) {
+        this.vy = 0;
+      }
+    }
 
     // Animation for Caveman Running
     let runningFrameTime = deltaTime * 3500;

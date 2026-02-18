@@ -23,14 +23,14 @@ ctx.imageSmoothingEnabled = true;
 // Create Player
 const player = new Caveman(
   0,
-  0,
+  world.canvasBaseHeight - world.cavemanBaseHeight,
   world.cavemanBaseWidth,
   world.cavemanBaseHeight,
   cavemanSprites,
 );
 
 // Create Platform
-const plat1 = new Platform(300, 600, 300, 100, player);
+const plat1 = new Platform(canvas.width - 100, 600, 300, 100, player);
 
 // Main Game Loop
 let last = 0;
@@ -59,6 +59,9 @@ const resize = () => {
 
   // Scale Character, Gravity, JumpStrength, and Ground Level
   player.scalePlayer(scale);
+
+  // Scale Platform X, Y, Width, And Height
+  plat1.scalePlatform(scale);
 
   plat1.scaled = true;
 };
