@@ -2,16 +2,28 @@ import Caveman from "./Caveman.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-ctx.imageSmoothingEnabled = false; // Don't blur pixels when scaling
+
+const cavemanRunning = new Image();
+cavemanRunning.src = "./images/Caveman_Run.png";
+
+const cavemanJumping = new Image();
+cavemanJumping.src = "./images/Caveman_Jump.png";
+
+const cavemanSprites = {
+  running: cavemanRunning,
+  jumping: cavemanJumping,
+};
+
+ctx.imageSmoothingEnabled = true;
 
 // Constants
 const BASE_WIDTH = 360;
 const BASE_HEIGHT = 640;
-const CAVEMAN_WIDTH = BASE_WIDTH * 0.1;
-const CAVEMANHEIGHT = BASE_WIDTH * 0.1;
+const CAVEMAN_WIDTH = BASE_WIDTH * 0.3;
+const CAVEMAN_HEIGHT = BASE_WIDTH * 0.3;
 
 // Create Player
-const player = new Caveman(0, 0, CAVEMAN_WIDTH, CAVEMANHEIGHT);
+const player = new Caveman(0, 0, CAVEMAN_WIDTH, CAVEMAN_HEIGHT, cavemanSprites);
 
 // Main Game Loop
 let last = 0;
@@ -50,5 +62,7 @@ const draw = () => {
   player.draw(ctx);
 };
 
-//Start
-requestAnimationFrame(gameLoop);
+//Start when sprite is ready
+cavemanRunning.onload = () => {
+  requestAnimationFrame(gameLoop);
+};
