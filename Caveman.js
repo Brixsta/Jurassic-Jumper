@@ -88,6 +88,11 @@ export default class Caveman {
   draw = (ctx) => {
     let currentAnim = this.currentAnimation;
 
+    // Safeguard incase Caveman assets haven't loaded yet
+    if (!this.cavemanRunning?.complete || !this.cavemanJumping?.complete) {
+      return;
+    }
+
     // Draw Caveman Running
     if (currentAnim === "running") {
       const cols = 4;
