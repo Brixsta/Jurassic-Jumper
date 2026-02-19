@@ -8,14 +8,16 @@ export default class Caveman {
     this.baseY = y;
     this.baseWidth = width;
     this.baseHeight = height;
-    this.spawned = false;
 
+    // Current Values
     this.x = this.baseX;
     this.y = this.baseY;
     this.width = this.baseWidth;
     this.height = this.baseHeight;
     this.scale = 1;
+    this.onPlatform = false;
 
+    // Sprites
     this.cavemanRunning = cavemanSprites.running;
     this.cavemanJumping = cavemanSprites.jumping;
 
@@ -23,7 +25,7 @@ export default class Caveman {
     this.gravity = world.baseGravity;
     this.jumpStrength = world.cavemanBaseJumpStrength;
     this.vy = 0;
-    this.groundLevel = world.baseGroundLevel;
+    this.vx = 0;
     this.currentAnimation = "running";
     this.handleInput();
 
@@ -52,9 +54,9 @@ export default class Caveman {
   // Listen for SpaceBar
   handleInput = () => {
     document.addEventListener("keydown", (e) => {
-      if (e.code === "Space" && this.currentAnimation !== "jumping") {
+      if (e.code === "Space" && this.onPlatform) {
         this.vy = -this.jumpStrength;
-        this.currentAnimation = "jumping";
+        // this.currentAnimation = "jumping";
       }
     });
   };
@@ -77,25 +79,14 @@ export default class Caveman {
     // Scale JumpStrength
     this.jumpStrength = world.cavemanBaseJumpStrength * newScale;
 
-    // Update Ground Level
-    this.groundLevel = world.baseGroundLevel * newScale - this.height;
-
     // Store the new scale for the next resize
     this.scale = newScale;
   };
 
-  detectCurrentAnimation = () => {
-    if (this.y >= this.groundLevel || this.vy >= 0) {
-      this.currentAnimation = "running";
-      this.animations.jumping.frame = 0;
-    }
-    if (this.vy <= 0) {
-      this.currentAnimation = "jumping";
-    }
-  };
+  detectCurrentAnimation = () => {};
 
   draw = (ctx) => {
-    const currentAnim = this.currentAnimation;
+    let currentAnim = this.currentAnimation;
 
     // Draw Caveman Running
     if (currentAnim === "running") {
@@ -152,9 +143,7 @@ export default class Caveman {
 
     // Move
     this.y += this.vy * deltaTime;
-
-    // Land on Ground Level
-    if (this.y >= this.groundLevel) this.y = this.groundLevel;
+    this.x += this.vx * deltaTime;
 
     // Hit head on Ceiling
     if (this.y <= 0) {

@@ -1,6 +1,10 @@
 import Caveman from "./Caveman.js";
 import Platform from "./Platform.js";
 import World from "./World.js";
+import { setupResponsiveScaling } from "./responsive.js";
+import { startGameLoop } from "./gameloop.js";
+import { updateGameObjects } from "./update.js";
+import { drawGameObjects } from "./drawGameObjects.js";
 
 const world = World;
 
@@ -20,63 +24,40 @@ const cavemanSprites = {
 
 ctx.imageSmoothingEnabled = true;
 
+// Create Platform
+const plat1 = new Platform(
+  0,
+  world.canvasBaseHeight - 30,
+  world.canvasBaseWidth * 2,
+  30,
+  "green",
+);
+const plat2 = new Platform(world.canvasBaseWidth * 2, 300, 300, 100, "blue");
+
 // Create Player
 const player = new Caveman(
   0,
-  world.canvasBaseHeight - world.cavemanBaseHeight,
+  // world.canvasBaseHeight - world.cavemanBaseHeight,
+  world.canvasBaseHeight - plat2.height,
   world.cavemanBaseWidth,
   world.cavemanBaseHeight,
   cavemanSprites,
 );
 
-// Create Platform
-const plat1 = new Platform(canvas.width - 100, 600, 300, 100, player);
-
-// Main Game Loop
-let last = 0;
-const gameLoop = (time) => {
-  let deltaTime = (time - last) / 1000; // Seconds since last frame update
-  last = time;
-  update(deltaTime);
-  draw();
-  requestAnimationFrame(gameLoop);
-};
-
-// Update Objects
+// Update Game Objects
 const update = (deltaTime) => {
-  player.update(deltaTime);
-  plat1.update(deltaTime);
+  updateGameObjects(player, platforms, deltaTime);
 };
+// Create Platforms array
+const platforms = [plat1, plat2];
 
-// Responsive scaling
-const resize = () => {
-  const scaleX = window.innerWidth / world.canvasBaseWidth;
-  const scaleY = window.innerHeight / world.canvasBaseHeight;
-  const scale = Math.min(scaleX, scaleY);
+// Apply Responsive Scaling
+setupResponsiveScaling(canvas, world, player, platforms, ctx);
 
-  canvas.width = world.canvasBaseWidth * scale;
-  canvas.height = world.canvasBaseHeight * scale;
-
-  // Scale Character, Gravity, JumpStrength, and Ground Level
-  player.scalePlayer(scale);
-
-  // Scale Platform X, Y, Width, And Height
-  plat1.scalePlatform(scale);
-
-  plat1.scaled = true;
-};
-
-window.onresize = resize;
-resize(); // call initially
-
-// Render
+// Draw Objects on Canvas
 const draw = () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  player.draw(ctx);
-  plat1.draw(ctx);
+  drawGameObjects(ctx, canvas, player, platforms);
 };
 
-//Start when sprite is ready
-cavemanRunning.onload = () => {
-  requestAnimationFrame(gameLoop);
-};
+// Start Game
+startGameLoop(update, draw);
