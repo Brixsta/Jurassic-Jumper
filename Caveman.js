@@ -2,12 +2,12 @@ import World from "./World.js";
 const world = World;
 
 export default class Caveman {
-  constructor(x, y, width, height, cavemanSprites) {
+  constructor(x, y, cavemanSprites) {
     // Base Values
     this.baseX = x;
     this.baseY = y;
-    this.baseWidth = width;
-    this.baseHeight = height;
+    this.baseWidth = world.cavemanWidth;
+    this.baseHeight = world.cavemanHeight;
 
     // Current Values
     this.x = this.baseX;
@@ -22,8 +22,8 @@ export default class Caveman {
     this.cavemanJumping = cavemanSprites.jumping;
 
     // Physics
-    this.gravity = world.baseGravity;
-    this.jumpStrength = world.cavemanBaseJumpStrength;
+    this.gravity = world.gravity;
+    this.jumpStrength = world.cavemanJumpStrength;
     this.vy = 0;
     this.vx = 0;
     this.currentAnimation = "running";
@@ -74,10 +74,10 @@ export default class Caveman {
     this.y *= ratio;
 
     // Scale Gravity
-    this.gravity = world.baseGravity * newScale;
+    this.gravity = world.gravity * newScale;
 
     // Scale JumpStrength
-    this.jumpStrength = world.cavemanBaseJumpStrength * newScale;
+    this.jumpStrength = world.cavemanJumpStrength * newScale;
 
     // Store the new scale for the next resize
     this.scale = newScale;

@@ -2,7 +2,8 @@ import Caveman from "./Caveman.js";
 import Platform from "./Platform.js";
 import World from "./World.js";
 import AssetLoader from "./AssetLoader.js";
-import { handlePlayerPlatformCollision } from "./helpers.js";
+import { handleStartGame } from "./start.js";
+import { handleResponsiveScaling } from "./responsive.js";
 
 const world = World;
 const canvas = document.getElementById("game");
@@ -15,82 +16,34 @@ assetLoader
     { key: "cavemanJumping", src: "./images/Caveman_Jump.png" },
   ])
   .then(() => {
-    console.log("ASSETS LOADED!");
-
     const cavemanSprites = {
       running: assetLoader.getImage("cavemanRunning"),
       jumping: assetLoader.getImage("cavemanJumping"),
     };
 
-    // Platforms
-    const plat1 = new Platform(
-      0,
-      world.canvasBaseHeight - 30,
-      world.canvasBaseWidth * 2,
-      30,
-      "green",
+    // Create Init Platform
+    const initPlatform = new Platform(
+      world.initPlatformStartX, // x
+      world.initPlatformStartY, // y
+      world.initPlatformWidth, // width
+      world.initPlatformHeight, // height
+      "green", // color
     );
-    const plat2 = new Platform(
-      world.canvasBaseWidth * 2,
-      300,
-      300,
-      100,
-      "blue",
-    );
-    const platforms = [plat1, plat2];
 
-    // Player
+    // Create Platforms array with Init Platform at index 0
+    const platforms = [initPlatform];
+
+    // Create Player
     const player = new Caveman(
-      0,
-      world.canvasBaseHeight - plat2.height,
-      world.cavemanBaseWidth,
-      world.cavemanBaseHeight,
+      world.cavemanStartX, // x
+      world.cavemanStartY, //y
       cavemanSprites,
     );
 
     // Responsive scaling
-    const resize = () => {
-      const scale = Math.min(
-        window.innerWidth / world.canvasBaseWidth,
-        window.innerHeight / world.canvasBaseHeight,
-      );
-      canvas.width = world.canvasBaseWidth * scale;
-      canvas.height = world.canvasBaseHeight * scale;
+    handleResponsiveScaling(world, canvas, player, platforms);
 
-      player.scalePlayer(scale);
-      platforms.forEach((p) => p.scalePlatform(scale));
-    };
-    window.onresize = resize;
-    resize();
-
-    // Update
-    const updateGameObjects = (deltaTime) => {
-      player.update(deltaTime);
-      player.onPlatform = false;
-
-      for (let p of platforms) {
-        p.update(deltaTime);
-        handlePlayerPlatformCollision(player, p);
-      }
-    };
-
-    // Draw
-    const drawGameObjects = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      player.draw(ctx);
-      platforms.forEach((p) => p.draw(ctx));
-    };
-
-    let last = performance.now();
-    const gameLoop = (time) => {
-      const MAX_DELTA = 0.05;
-      let deltaTime = (time - last) / 1000;
-      deltaTime = Math.min(deltaTime, MAX_DELTA);
-      last = time;
-      updateGameObjects(deltaTime);
-      drawGameObjects();
-      requestAnimationFrame(gameLoop);
-    };
-    requestAnimationFrame(gameLoop);
+    // Start Game
+    handleStartGame(ctx, canvas, player, platforms);
   })
   .catch((err) => console.error("Failed to load assets!", err));
