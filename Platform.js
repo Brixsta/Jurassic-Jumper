@@ -1,9 +1,11 @@
+import world from "./World.js";
+
 export default class Platform {
   constructor(x, y, width, height, color) {
     // Base Values
     this.baseWidth = width;
     this.baseHeight = height;
-    this.basePlatformSpeed = 100;
+    this.basePlatformSpeed = world.platformSpeed;
     this.color = color;
 
     this.width = this.baseWidth;

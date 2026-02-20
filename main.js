@@ -23,24 +23,59 @@ assetLoader
 
     // Create Init Platform
     const initPlatform = new Platform(
-      world.initPlatformStartX, // x
-      world.initPlatformStartY, // y
-      world.initPlatformWidth, // width
-      world.initPlatformHeight, // height
-      "green", // color
+      world.initPlatformStartX,
+      world.initPlatformStartY,
+      world.initPlatformWidth,
+      world.initPlatformHeight,
+      "green",
     );
 
     // Create Platforms array with Init Platform at index 0
     const platforms = [initPlatform];
 
     // Create Player
-    const player = new Caveman(
-      world.cavemanStartX, // x
-      world.cavemanStartY, //y
-      cavemanSprites,
-    );
+    const player = new Caveman(cavemanSprites);
 
-    // Responsive scaling
+    let lastPlatformX = world.initPlatformStartX;
+    let lastPlatformY = world.initPlatformStartY;
+    let lastPlatformWidth = world.initPlatformWidth;
+
+    // 150 good
+
+    // Create Platforms
+    for (let i = 0; i < 1500; i++) {
+      let divider = [200, 170, 150, 120, 100][Math.floor(Math.random() * 5)];
+      let platformWidth = [300, 200, 150, 100, 50][
+        Math.floor(Math.random() * 3)
+      ];
+      let platformHeight = [80, 75, 70, 65, 60][Math.floor(Math.random() * 5)];
+
+      let randomY = Math.floor(
+        Math.random() * (640 - platformHeight - 200) + 200,
+      );
+
+      while (Math.abs(randomY - lastPlatformY) > 400) {
+        randomY = Math.floor(
+          Math.random() * (610 - (player.height + platformHeight + 100)) +
+            (player.height + platformHeight + 100),
+        );
+      }
+
+      let x = lastPlatformX + lastPlatformWidth + divider;
+      let y = randomY;
+
+      let color = "red;";
+
+      lastPlatformX = x;
+      lastPlatformY = y;
+      lastPlatformWidth = platformWidth;
+
+      const platform = new Platform(x, y, platformWidth, platformHeight, color);
+
+      platforms.push(platform);
+    }
+
+    // Responsive scaling on window resize
     handleResponsiveScaling(world, canvas, player, platforms);
 
     // Start Game

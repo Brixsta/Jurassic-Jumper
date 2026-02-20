@@ -2,10 +2,10 @@ import World from "./World.js";
 const world = World;
 
 export default class Caveman {
-  constructor(x, y, cavemanSprites) {
+  constructor(cavemanSprites) {
     // Base Values
-    this.baseX = x;
-    this.baseY = y;
+    this.baseX = world.cavemanStartX;
+    this.baseY = world.cavemanStartY;
     this.baseWidth = world.cavemanWidth;
     this.baseHeight = world.cavemanHeight;
 
@@ -16,6 +16,7 @@ export default class Caveman {
     this.height = this.baseHeight;
     this.scale = 1;
     this.onPlatform = false;
+    this.jumpsRemaining = 0;
 
     // Sprites
     this.cavemanRunning = cavemanSprites.running;
@@ -56,6 +57,7 @@ export default class Caveman {
     document.addEventListener("keydown", (e) => {
       if (e.code === "Space" && this.onPlatform) {
         this.vy = -this.jumpStrength;
+
         // this.currentAnimation = "jumping";
       }
     });
@@ -138,6 +140,10 @@ export default class Caveman {
   };
 
   update(deltaTime) {
+    let min = Infinity;
+    let start = Math.floor(this.y);
+    min = Math.floor(Math.min(this.y, min));
+
     const currentAnim = this.currentAnimation;
 
     // Detect Current Animation
@@ -150,14 +156,14 @@ export default class Caveman {
     this.y += this.vy * deltaTime;
     this.x += this.vx * deltaTime;
 
-    // Hit head on Ceiling
-    if (this.y <= 0) {
-      this.y = 0;
+    // // Hit head on Ceiling
+    // if (this.y <= 0) {
+    //   this.y = 0;
 
-      if (this.vy < 0) {
-        this.vy = 0;
-      }
-    }
+    //   if (this.vy < 0) {
+    //     this.vy = 0;
+    //   }
+    // }
 
     // Animation for Caveman Running
     let runningFrameTime = deltaTime * 3500;
